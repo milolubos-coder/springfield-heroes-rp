@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+    <meta charset="UTF-8">
+    <title>Springfield Heroes RPG</title>
+    <style>
+        body { font-family: 'Arial', sans-serif; background-color: #ffd900; color: #333; text-align: center; }
+        .game-container { background: white; max-width: 600px; margin: 20px auto; padding: 20px; border-radius: 15px; border: 4px solid #000; }
+        .stats { display: flex; justify-content: space-around; background: #eee; padding: 10px; border-radius: 10px; margin-bottom: 20px; }
+        button { background: #008cff; color: white; border: none; padding: 10px 20px; margin: 5px; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        button:hover { background: #005fbb; }
+        #log { background: #333; color: #0f0; padding: 10px; height: 100px; overflow-y: scroll; text-align: left; margin-top: 20px; font-family: monospace; }
+    </style>
+</head>
+<body>
+
+    <h1>🍺 Springfield Heroes: Nuclear Warrior</h1>
+    
+    <div class="game-container">
+        <div class="stats">
+            <div>❤️ HP: <span id="hp">150</span></div>
+            <div>💪 Sila: <span id="str">15</span></div>
+            <div>💰 Goldy: <span id="gold">100</span></div>
+        </div>
+
+        <h3>Mestečko</h3>
+        <button onclick="playQuest()">Hospoda u Očka (Quest)</button>
+        <button onclick="train()">Elektráreň (Tréning -10g)</button>
+        <button onclick="buyArmor()">Kwik-E-Mart (Brnenie -150g)</button>
+        <button onclick="upgradeHouse()">Môj Dom (Gauč -200g)</button>
+
+        <div id="log">Vitaj v mestečku! Priprav sa na dobrodružstvo...</div>
+    </div>
+
+    <script>
+        // Logika hry
+        let hero = { hp: 150, str: 15, gold: 100 };
+
+        function updateUI() {
+            document.getElementById('hp').innerText = hero.hp;
+            document.getElementById('str').innerText = hero.str;
+            document.getElementById('gold').innerText = hero.gold;
+        }
+
+        function log(msg) {
+            const logDiv = document.getElementById('log');
+            logDiv.innerHTML += "> " + msg + "<br>";
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+
+        function playQuest() {
+            let reward = 50;
+            hero.gold += reward;
+            log("Splnil si quest u Očka a získal " + reward + " goldov!");
+            updateUI();
+        }
+
+        function train() {
+            if (hero.gold >= 10) {
+                hero.gold -= 10;
+                hero.str += 2;
+                log("Trénoval si v elektrárni. Sila +2!");
+            } else { log("Máš málo goldov!"); }
+            updateUI();
+        }
+
+        function buyArmor() {
+            if (hero.gold >= 150) {
+                hero.gold -= 150;
+                hero.hp += 50;
+                log("Kúpil si Dračie brnenie! HP +50");
+            } else { log("Apu ťa vyhodil, si chudobný!"); }
+            updateUI();
+        }
+
+        function upgradeHouse() {
+            if (hero.gold >= 200) {
+                hero.gold -= 200;
+                log("Dom vylepšený o luxusný nábytok!");
+            } else { log("Na nábytok nemáš peniaze."); }
+            updateUI();
+        }
+    </script>
+</body>
+</html>
