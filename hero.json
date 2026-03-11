@@ -1,0 +1,15 @@
+{
+  "name": "Atómový Dračí Barbar",
+  "stats": {
+    "strength": 15,
+    "agility": 8,
+    "intelligence": 5,
+    "endurance": 12,
+    "health": 150
+  },
+  "equipment": {
+    "head": "Dračia prilba",
+    "weapon": "Atómová tyč",
+    "shield": "Rádioaktívny štít"
+  }
+}
