@@ -2,116 +2,99 @@
 <html lang="sk">
 <head>
     <meta charset="UTF-8">
-    <title>Springfield Heroes RPG</title>
+    <title>Springfield Heroes RPG - Login</title>
     <style>
-        /* Základné nastavenie stránky */
         body { 
             font-family: 'Arial', sans-serif; 
-            background-color: #ffd900; /* Typická žltá */
-            color: #333; 
-            margin: 0; 
-            padding: 0;
-            display: flex; /* Flexbox pre layout */
-            height: 100vh; /* Na celú výšku obrazovky */
+            background-color: #ffd900; 
+            margin: 0; padding: 0;
+            display: flex; height: 100vh;
         }
 
-        /* 🗺️ HLAVNÁ OBRAZOVKA S MAPOU */
-        .map-container { 
-            flex: 1; /* Zaberie zvyšok miesta */
-            background: url('mesto.png') no-repeat center center; 
-            background-size: cover; /* Mapa na celú plochu */
-            position: relative;
-            border-right: 5px solid #000;
+        /* 🔒 LOGIN OBRAZOVKA */
+        #login-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #ffd900; display: flex; flex-direction: column;
+            justify-content: center; align-items: center; z-index: 100;
         }
+        .login-box {
+            background: white; padding: 30px; border-radius: 15px;
+            border: 5px solid #000; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        input { padding: 10px; margin: 10px; border: 2px solid #333; border-radius: 5px; width: 200px; display: block; }
+        .login-btn { background: #000; color: #fff; padding: 10px 20px; cursor: pointer; font-weight: bold; }
 
-        /* 🖥️ BOČNÝ OVLÁDACÍ PANEL */
-        .sidebar { 
-            width: 320px; /* Pevná šírka panelu */
-            background: white; 
-            padding: 20px; 
-            display: flex; 
-            flex-direction: column; /* Prvky pod sebou */
-            justify-content: space-between; /* Roztiahnuť prvky */
-            box-shadow: -10px 0 20px rgba(0,0,0,0.3);
-        }
-
-        /* Štatistiky hrdinu */
-        .stats { 
-            background: #eee; 
-            padding: 15px; 
-            border-radius: 10px; 
-            border: 2px solid #333;
-            margin-bottom: 20px;
-        }
-        .stat-item { margin: 5px 0; font-size: 1.1em; font-weight: bold; }
-
-        /* Tlačidlá akcií */
-        .actions { display: flex; flex-direction: column; gap: 10px; }
-        button { 
-            background: #008cff; 
-            color: white; 
-            border: 3px solid #000; 
-            padding: 12px; 
-            border-radius: 10px; 
-            cursor: pointer; 
-            font-weight: bold; 
-            font-size: 1em;
-            transition: transform 0.1s;
-        }
-        button:hover { background: #005fbb; transform: scale(1.03); }
-        button:active { transform: scale(0.97); }
-
-        /* Konzola s logom */
-        #log { 
-            background: #333; 
-            color: #0f0; 
-            padding: 10px; 
-            height: 150px; 
-            overflow-y: scroll; 
-            text-align: left; 
-            font-family: monospace; 
-            border-radius: 5px;
-            border: 2px solid #000;
-        }
+        /* 🎮 HERNÁ OBRAZOVKA (skrytá na začiatku) */
+        #game-screen { display: none; width: 100%; height: 100vh; }
         
-        /* Nadpis v paneli */
-        .sidebar-header { text-align: center; margin-bottom: 20px; }
+        /* Ostatné štýly zostávajú */
+        .map-container { flex: 1; background: url('mesto.png') no-repeat center center; background-size: cover; position: relative; border-right: 5px solid #000; }
+        .sidebar { width: 320px; background: white; padding: 20px; display: flex; flex-direction: column; justify-content: space-between; box-shadow: -10px 0 20px rgba(0,0,0,0.3); }
+        .stats { background: #eee; padding: 15px; border-radius: 10px; border: 2px solid #333; margin-bottom: 20px; }
+        .stat-item { margin: 5px 0; font-size: 1.1em; font-weight: bold; }
+        .actions { display: flex; flex-direction: column; gap: 10px; }
+        button { background: #008cff; color: white; border: 3px solid #000; padding: 12px; border-radius: 10px; cursor: pointer; font-weight: bold; }
+        #log { background: #333; color: #0f0; padding: 10px; height: 150px; overflow-y: scroll; font-family: monospace; border-radius: 5px; border: 2px solid #000; }
     </style>
 </head>
 <body>
 
-    <div class="map-container">
+    <div id="login-screen">
+        <div class="login-box">
+            <h1>Kto si, hrdina?</h1>
+            <input type="text" id="username" placeholder="Meno (Lubo, Karol, Peter)">
+            <input type="password" id="password" placeholder="Heslo">
+            <button class="login-btn" onclick="checkLogin()">Vstúpiť do mesta</button>
+            <p id="error-msg" style="color: red; display: none;">Nesprávne meno alebo heslo!</p>
         </div>
+    </div>
 
-    <div class="sidebar">
-        <div class="sidebar-header">
-            <h2>Springfield Heroes</h2>
-            <p>Nuclear Warrior Edition</p>
-        </div>
-
-        <div class="panel-content">
-            <div class="stats">
-                <h3>👤 Hrdina</h3>
-                <div class="stat-item">❤️ HP: <span id="hp">150</span></div>
-                <div class="stat-item">💪 Sila: <span id="str">15</span></div>
-                <div class="stat-item">💰 Goldy: <span id="gold">100</span></div>
+    <div id="game-screen" style="display: flex; width: 100%;">
+        <div class="map-container"></div>
+        <div class="sidebar">
+            <div>
+                <h2 id="player-display">Hrdina: ---</h2>
+                <div class="stats">
+                    <div class="stat-item">❤️ HP: <span id="hp">150</span></div>
+                    <div class="stat-item">💪 Sila: <span id="str">15</span></div>
+                    <div class="stat-item">💰 Goldy: <span id="gold">100</span></div>
+                </div>
+                <div class="actions">
+                    <button onclick="playQuest()">Hospoda (Quest)</button>
+                    <button onclick="train()">Elektráreň (Tréning)</button>
+                    <button onclick="buyArmor()">Obchod (Brnenie)</button>
+                </div>
             </div>
-
-            <div class="actions">
-                <button onclick="playQuest()">Hospoda (Quest)</button>
-                <button onclick="train()">Elektráreň (Tréning -10g)</button>
-                <button onclick="buyArmor()">Kwik-E-Mart (Brnenie -150g)</button>
-                <button onclick="upgradeHouse()">Môj Dom (Gauč -200g)</button>
-            </div>
+            <div id="log">Vitaj v hre!</div>
         </div>
-
-        <div id="log">Vitaj v mestečku! Mapa je načítaná...<br>> Priprav sa na dobrodružstvo!</div>
     </div>
 
     <script>
-        // --- JADRO HRY (Zostáva rovnaké, len s LOGOM) ---
-        let hero = { hp: 150, str: 15, gold: 100 };
+        // 🔑 Prihlasovacie údaje
+        const users = {
+            "Lubo": "123Lubo",
+            "Karol": "123Karol",
+            "Peter": "123Peter"
+        };
 
+        let hero = { hp: 150, str: 15, gold: 100, name: "" };
+
+        function checkLogin() {
+            const user = document.getElementById('username').value;
+            const pass = document.getElementById('password').value;
+
+            if (users[user] && users[user] === pass) {
+                hero.name = user;
+                document.getElementById('player-display').innerText = "Hrdina: " + user;
+                document.getElementById('login-screen').style.display = 'none';
+                document.getElementById('game-screen').style.display = 'flex';
+                log("Hrdina " + user + " vstúpil do Springfieldu.");
+            } else {
+                document.getElementById('error-msg').style.display = 'block';
+            }
+        }
+
+        // --- HERNÉ FUNKCIE ---
         function updateUI() {
             document.getElementById('hp').innerText = hero.hp;
             document.getElementById('str').innerText = hero.str;
@@ -121,41 +104,12 @@
         function log(msg) {
             const logDiv = document.getElementById('log');
             logDiv.innerHTML += "> " + msg + "<br>";
-            logDiv.scrollTop = logDiv.scrollHeight; // Automatické scrollovanie dole
+            logDiv.scrollTop = logDiv.scrollHeight;
         }
 
-        function playQuest() {
-            let reward = 50;
-            hero.gold += reward;
-            log("Splnil si quest v Hospode. Goldy +50.");
-            updateUI();
-        }
-
-        function train() {
-            if (hero.gold >= 10) {
-                hero.gold -= 10;
-                hero.str += 2;
-                log("Drel si v elektrárni. Sila +2!");
-            } else { log("❌ Máš málo goldov na tréning!"); }
-            updateUI();
-        }
-
-        function buyArmor() {
-            if (hero.gold >= 150) {
-                hero.gold -= 150;
-                hero.hp += 50;
-                log("🛒 Kúpil si brnenie v Kwik-E-Mart. HP +50");
-            } else { log("❌ Na brnenie nemáš peniaze."); }
-            updateUI();
-        }
-
-        function upgradeHouse() {
-            if (hero.gold >= 200) {
-                hero.gold -= 200;
-                log("🏠 Dom vylepšený! Komfort +10.");
-            } else { log("❌ Na nábytok nemáš peniaze."); }
-            updateUI();
-        }
+        function playQuest() { hero.gold += 50; log("Quest hotový! +50g"); updateUI(); }
+        function train() { if(hero.gold>=10){ hero.gold-=10; hero.str+=2; log("Tréning! Sila +2"); } updateUI(); }
+        function buyArmor() { if(hero.gold>=150){ hero.gold-=150; hero.hp+=50; log("Nové brnenie! HP +50"); } updateUI(); }
     </script>
 </body>
 </html>
