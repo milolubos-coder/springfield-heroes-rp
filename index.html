@@ -2,161 +2,305 @@
 <html lang="sk">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Springfield Heroes RPG - Kompletná Edícia</title>
+    <meta 
+        name="viewport" 
+        content="width=device-width, initial-scale=1.0"
+    >
+    <title>Springfield Heroes RPG - Master Edition</title>
+    
     <style>
-        /* 🎨 KOMPLETNÝ DIZAJN */
+        /* =========================================
+           🎨 ZÁKLADNÉ NASTAVENIA STRÁNKY
+           ========================================= */
+        * {
+            box-sizing: border-box;
+        }
+
         body { 
-            font-family: 'Arial', sans-serif; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
             background-color: #ffd900; 
             margin: 0; 
             padding: 0;
             display: flex; 
             height: 100vh; 
+            width: 100vw;
             overflow: hidden; 
         }
 
-        /* 🔒 LOGIN SCREEN */
+        /* =========================================
+           🔒 LOGIN SYSTÉM (PRIHLÁSENIE)
+           ========================================= */
         #login-screen { 
             position: fixed; 
-            top: 0; left: 0; 
-            width: 100%; height: 100%; 
-            background: #ffd900; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            background-color: #ffd900; 
             display: flex; 
             justify-content: center; 
             align-items: center; 
-            z-index: 1000; 
-        }
-        .login-box { 
-            background: white; 
-            padding: 40px; 
-            border-radius: 20px; 
-            border: 6px solid #000; 
-            text-align: center; 
-            box-shadow: 0 15px 40px rgba(0,0,0,0.4);
-        }
-        .login-box h1 { margin-top: 0; font-size: 2em; }
-        input { 
-            padding: 12px; 
-            margin: 10px 0; 
-            border: 3px solid #333; 
-            border-radius: 8px; 
-            width: 250px; 
-            display: block; 
-            font-size: 1em;
-        }
-        .btn-login { 
-            background: #000; 
-            color: #fff; 
-            padding: 12px 30px; 
-            border: none; 
-            border-radius: 8px; 
-            cursor: pointer; 
-            font-weight: bold; 
-            font-size: 1.1em;
-            width: 100%;
+            z-index: 9999; 
         }
 
-        /* 🎮 HLAVNÁ HRA */
+        .login-box { 
+            background-color: #ffffff; 
+            padding: 50px; 
+            border-radius: 30px; 
+            border: 8px solid #000000; 
+            text-align: center; 
+            box-shadow: 0 25px 60px rgba(0,0,0,0.6);
+            max-width: 450px;
+            width: 90%;
+        }
+
+        .login-box h1 { 
+            font-size: 2.8em; 
+            margin-bottom: 20px; 
+            text-transform: uppercase; 
+            color: #000;
+        }
+
+        .login-box p {
+            font-weight: bold;
+            color: #555;
+            margin-bottom: 20px;
+        }
+
+        .login-box input { 
+            padding: 15px; 
+            margin: 10px 0; 
+            border: 4px solid #333333; 
+            border-radius: 12px; 
+            width: 100%; 
+            display: block; 
+            font-size: 1.2em;
+            outline: none;
+        }
+
+        .btn-login { 
+            background-color: #000000; 
+            color: #ffffff; 
+            padding: 18px; 
+            border: none; 
+            border-radius: 12px; 
+            cursor: pointer; 
+            font-weight: bold; 
+            width: 100%; 
+            font-size: 1.3em; 
+            margin-top: 15px;
+            transition: background 0.3s;
+        }
+
+        .btn-login:hover {
+            background-color: #333;
+        }
+
+        #error-msg { 
+            color: #ff0000; 
+            display: none; 
+            font-weight: bold; 
+            margin-top: 15px; 
+        }
+
+        /* =========================================
+           🗺️ MAPA A ANIMÁCIA OBLAKOV
+           ========================================= */
         #game-screen { 
             display: none; 
             width: 100%; 
             height: 100%; 
-            display: flex; 
         }
 
-        /* 🗺️ MAPA (Ľavá strana) */
         .map-container { 
             flex: 1; 
-            background: url('mesto.png') no-repeat center center; 
+            background-image: url('mesto.png'); 
+            background-repeat: no-repeat;
+            background-position: center center;
             background-size: cover; 
-            border-right: 6px solid #000; 
-            position: relative;
+            border-right: 8px solid #000000; 
+            position: relative; 
+            overflow: hidden; 
         }
 
-        /* 🖥️ SIDEBAR (Pravá strana) */
+        /* ☁️ CLOUD CSS SYSTEM */
+        .cloud {
+            position: absolute; 
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 100px; 
+            pointer-events: none; 
+            filter: blur(5px);
+            width: 160px;
+            height: 50px;
+        }
+
+        .cloud::before, .cloud::after {
+            content: ''; 
+            position: absolute; 
+            background-color: rgba(255, 255, 255, 0.9); 
+            border-radius: 50%;
+        }
+
+        .cloud::before { 
+            width: 80px; 
+            height: 80px; 
+            top: -40px; 
+            left: 20px; 
+        }
+
+        .cloud::after { 
+            width: 100px; 
+            height: 100px; 
+            top: -50px; 
+            left: 60px; 
+        }
+
+        /* Konkrétne mraky s rôznymi parametrami */
+        .c1 { top: 8%; animation: moveCloud 30s linear infinite; opacity: 0.8; }
+        .c2 { top: 22%; animation: moveCloud 50s linear infinite; animation-delay: -5s; opacity: 0.6; transform: scale(1.4); }
+        .c3 { top: 5%; animation: moveCloud 42s linear infinite; animation-delay: -15s; opacity: 0.4; transform: scale(0.9); }
+        .c4 { top: 30%; animation: moveCloud 65s linear infinite; animation-delay: -10s; opacity: 0.7; transform: scale(1.1); }
+        .c5 { top: 15%; animation: moveCloud 38s linear infinite; animation-delay: -25s; opacity: 0.5; }
+        .c6 { top: 40%; animation: moveCloud 75s linear infinite; animation-delay: -2s; opacity: 0.6; transform: scale(1.6); }
+
+        @keyframes moveCloud {
+            from { left: -300px; }
+            to { left: 100%; }
+        }
+
+        /* =========================================
+           🖥️ SIDEBAR (OVLÁDACÍ PANEL)
+           ========================================= */
         .sidebar { 
-            width: 350px; 
-            background: white; 
-            padding: 25px; 
+            width: 400px; 
+            background-color: #ffffff; 
+            padding: 30px; 
             display: flex; 
             flex-direction: column; 
-            box-shadow: -10px 0 30px rgba(0,0,0,0.2); 
+            box-shadow: -15px 0 40px rgba(0,0,0,0.4); 
             overflow-y: auto;
+            z-index: 10;
         }
 
-        h2 { margin-top: 0; border-bottom: 3px solid #ffd900; padding-bottom: 10px; }
-
-        /* 📊 ŠTATISTIKY */
-        .stats { 
-            background: #f4f4f4; 
-            padding: 15px; 
-            border-radius: 12px; 
-            border: 3px solid #333; 
-            margin-bottom: 20px; 
+        .sidebar h2 { 
+            margin-top: 0; 
+            font-size: 2em;
+            color: #000;
+            border-bottom: 4px solid #ffd900;
+            padding-bottom: 10px;
         }
-        .stat-row { 
+
+        /* 📊 ŠTATISTIKY PANEL */
+        .stats-panel { 
+            background-color: #f7f7f7; 
+            padding: 20px; 
+            border-radius: 20px; 
+            border: 4px solid #333333; 
+            margin-bottom: 30px; 
+        }
+
+        .stat-line { 
             display: flex; 
             justify-content: space-between; 
-            margin: 8px 0; 
+            font-size: 1.5em; 
             font-weight: bold; 
-            font-size: 1.2em; 
+            margin: 8px 0; 
         }
 
-        /* ⚔️ AKCIE */
-        .actions h3 { margin: 15px 0 10px 0; font-size: 1.3em; }
-        button { 
-            background: #008cff; 
-            color: white; 
-            border: 3px solid #000; 
-            padding: 14px; 
-            border-radius: 10px; 
+        .label { color: #555; }
+        .value { color: #008cff; }
+
+        /* 🕹️ AKČNÉ TLAČIDLÁ */
+        .action-group {
+            margin-bottom: 20px;
+        }
+
+        .action-group h3 { 
+            margin: 10px 0; 
+            font-size: 1.3em;
+            color: #333;
+            text-transform: uppercase;
+        }
+
+        button.game-btn { 
+            background-color: #008cff; 
+            color: #ffffff; 
+            border: 4px solid #000000; 
+            padding: 16px; 
+            border-radius: 15px; 
             cursor: pointer; 
             font-weight: bold; 
             width: 100%; 
-            margin-bottom: 8px;
-            font-size: 1em;
-            transition: transform 0.1s;
+            margin-bottom: 12px; 
+            font-size: 1.1em;
+            transition: all 0.2s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
-        button:hover { background: #005fbb; transform: scale(1.02); }
-        button:active { transform: scale(0.98); }
 
-        .btn-shop { background: #28a745; }
-        .btn-shop:hover { background: #218838; }
-
-        /* 🤺 ARENA (PvP) */
-        .pvp-section { 
-            background: #ffe5e5; 
-            padding: 15px; 
-            border-radius: 12px; 
-            border: 3px solid #c00; 
-            margin-top: 20px; 
+        button.game-btn:hover { 
+            background-color: #005fbb; 
+            transform: translateY(-4px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
         }
-        .pvp-section h3 { color: #c00; margin-top: 0; }
-        select { 
+
+        button.game-btn:active {
+            transform: translateY(0px);
+        }
+
+        .btn-kwik { background-color: #28a745 !important; }
+        .btn-kwik:hover { background-color: #218838 !important; }
+
+        /* ⚔️ PVP ARENA PANEL */
+        .arena-box { 
+            background-color: #ffe5e5; 
+            padding: 20px; 
+            border-radius: 20px; 
+            border: 4px solid #c00000; 
+            margin-top: 10px; 
+        }
+
+        .arena-box h3 { 
+            color: #c00000; 
+            margin-top: 0; 
+            font-size: 1.4em;
+        }
+
+        .arena-box select { 
             width: 100%; 
-            padding: 10px; 
-            border: 2px solid #000; 
-            border-radius: 8px; 
-            margin-bottom: 10px; 
+            padding: 14px; 
+            border: 3px solid #000000; 
+            border-radius: 12px; 
+            margin-bottom: 12px; 
             font-weight: bold; 
+            font-size: 1.1em;
+            background-color: #fff;
         }
-        .btn-attack { background: #c00; }
-        .btn-attack:hover { background: #a00; }
 
-        /* 📜 KONZOLA (LOG) */
-        #log { 
-            background: #222; 
-            color: #0f0; 
-            padding: 12px; 
-            height: 180px; 
+        .btn-attack { 
+            background-color: #c00000 !important; 
+            color: #fff !important;
+        }
+
+        .btn-attack:hover { 
+            background-color: #a00000 !important; 
+        }
+
+        /* 📜 LOGOVACIA KONZOLA */
+        #game-log { 
+            background-color: #222222; 
+            color: #00ff00; 
+            padding: 15px; 
+            height: 220px; 
             overflow-y: auto; 
             font-family: 'Courier New', monospace; 
-            font-size: 13px; 
-            margin-top: 20px; 
-            border: 3px solid #000; 
-            border-radius: 8px;
-            line-height: 1.4;
+            font-size: 14px; 
+            margin-top: auto; 
+            border: 4px solid #000000; 
+            border-radius: 15px;
+            line-height: 1.5;
+            box-shadow: inset 0 0 10px #000;
         }
     </style>
 </head>
@@ -165,54 +309,91 @@
     <div id="login-screen">
         <div class="login-box">
             <h1>Springfield RPG</h1>
-            <p>Zadaj svoje prístupové údaje:</p>
+            <p>Prihlás sa a hraj v reálnom čase</p>
+            
             <input type="text" id="username" placeholder="Meno (Lubo, Karol, Peter)">
             <input type="password" id="password" placeholder="Heslo">
+            
             <button class="btn-login" onclick="checkLogin()">VSTÚPIŤ DO HRY</button>
-            <p id="error-msg" style="color: red; display: none; font-weight: bold; margin-top: 10px;">Nesprávne meno alebo heslo!</p>
+            
+            <p id="error-msg">❌ Nesprávne meno alebo heslo!</p>
         </div>
     </div>
 
-    <div id="game-screen" style="display: none;">
+    <div id="game-screen">
         <div class="map-container">
-            </div>
+            <div class="cloud c1"></div>
+            <div class="cloud c2"></div>
+            <div class="cloud c3"></div>
+            <div class="cloud c4"></div>
+            <div class="cloud c5"></div>
+            <div class="cloud c6"></div>
+        </div>
         
         <div class="sidebar">
-            <h2 id="display-name">Hrdina: ---</h2>
+            <h2 id="hero-name-label">Hrdina: ---</h2>
             
-            <div class="stats">
-                <div class="stat-row"><span>❤️ HP:</span> <span id="hp">---</span></div>
-                <div class="stat-row"><span>💪 Sila:</span> <span id="str">---</span></div>
-                <div class="stat-row"><span>💰 Goldy:</span> <span id="gold">---</span></div>
+            <div class="stats-panel">
+                <div class="stat-line">
+                    <span class="label">❤️ HP (Život):</span> 
+                    <span id="hp" class="value">---</span>
+                </div>
+                <div class="stat-line">
+                    <span class="label">💪 Sila:</span> 
+                    <span id="str" class="value">---</span>
+                </div>
+                <div class="stat-line">
+                    <span class="label">💰 Goldy:</span> 
+                    <span id="gold" class="value">---</span>
+                </div>
             </div>
 
-            <div class="actions">
-                <h3>📍 Lokality</h3>
-                <button onclick="playQuest()">🍺 Hospoda u Očka (Quest +50g)</button>
-                <button onclick="train()">🏗️ Elektráreň (Tréning -10g)</button>
-                <button class="btn-shop" onclick="buyArmor()">🛒 Kwik-E-Mart (Brnenie -150g)</button>
+            <div class="action-group">
+                <h3>📍 Lokality v meste</h3>
                 
-                <div class="pvp-section">
+                <button class="game-btn" onclick="playQuest()">
+                    🍺 Hospoda u Očka (Quest +50g)
+                </button>
+                
+                <button class="game-btn" onclick="train()">
+                    🏗️ Jadrová elektráreň (+2 Sila / -10g)
+                </button>
+                
+                <button class="game-btn btn-kwik" onclick="buyArmor()">
+                    🛒 Kwik-E-Mart (+50 HP / -150g)
+                </button>
+                
+                <div class="arena-box">
                     <h3>⚔️ Aréna (Súboj o loot)</h3>
                     <select id="target-player">
-                        <option value="">Vyber obeť...</option>
+                        <option value="">-- Vyber si obeť --</option>
                         <option value="Lubo">Lubo</option>
                         <option value="Karol">Karol</option>
                         <option value="Peter">Peter</option>
                     </select>
-                    <button class="btn-attack" onclick="pvpAttack()">ZAÚTOČIŤ!</button>
+                    <button class="game-btn btn-attack" onclick="pvpAttack()">
+                        ZAÚTOČIŤ NA SÚPERA!
+                    </button>
                 </div>
             </div>
 
-            <div id="log">Vitaj v Springfielde! Čakám na prihlásenie...</div>
+            <div id="game-log">Systém: Pripravený na pripojenie...</div>
         </div>
     </div>
 
     <script type="module">
+        // Import Firebase knižníc z oficiálneho zdroja (CDN)
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, doc, getDoc, setDoc, updateDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { 
+            getFirestore, 
+            doc, 
+            getDoc, 
+            setDoc, 
+            updateDoc, 
+            onSnapshot 
+        } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        // Tvoja unikátna konfigurácia
+        // Tvoja unikátna konfigurácia (Firebase Project Settings)
         const firebaseConfig = {
             apiKey: "AIzaSyBco-l3gRLUA9y4aPmYuYnRT_gkZJGo4E",
             authDomain: "springfield-heroes.firebaseapp.com",
@@ -222,161 +403,199 @@
             appId: "1:601449864337:web:d98c8e66c5f27e756e7330"
         };
 
+        // Inicializácia Firebase a Databázy
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // Globálne dáta hrdinu
-        let hero = { name: "", hp: 150, str: 15, gold: 100 };
-        let isProcessingAction = false; // Ochrana pred falošnými notifikáciami
+        // Lokálna premenná pre dáta hrdinu
+        let hero = { 
+            name: "", 
+            hp: 150, 
+            str: 15, 
+            gold: 100 
+        };
 
-        // 🔑 FUNKCIA PRIHLÁSENIA
+        // Ochranný mechanizmus pred notifikáciami pri vlastných zmenách
+        let isLocalUpdate = false;
+
+        // 🔑 FUNKCIA PRIHLÁSENIA A AKTIVÁCIE REAL-TIME SYNCU
         window.checkLogin = async function() {
-            const user = document.getElementById('username').value;
-            const pass = document.getElementById('password').value;
+            const userIn = document.getElementById('username').value;
+            const passIn = document.getElementById('password').value;
             
+            // Definované účty
             const validAccounts = { 
                 "Lubo": "123Lubo", 
                 "Karol": "123Karol", 
                 "Peter": "123Peter" 
             };
 
-            if (validAccounts[user] && validAccounts[user] === pass) {
-                hero.name = user;
-                document.getElementById('display-name').innerText = "Hrdina: " + user;
+            if (validAccounts[userIn] && validAccounts[userIn] === passIn) {
+                hero.name = userIn;
                 
-                // --- REAL-TIME CLOUD LISTENER ---
-                const docRef = doc(db, "players", user);
-                onSnapshot(docRef, (docSnap) => {
-                    if (docSnap.exists()) {
-                        const cloudData = docSnap.data();
+                // --- REAL-TIME CLOUD LISTENER (Kľúčová časť pre real-time) ---
+                const playerDocRef = doc(db, "players", userIn);
+                
+                onSnapshot(playerDocRef, (snapshot) => {
+                    if (snapshot.exists()) {
+                        const incomingData = snapshot.data();
                         
-                        // Ak nám niekto ukradol goldy v cloude
-                        if (!isProcessingAction && cloudData.gold < hero.gold) {
-                            const loss = hero.gold - cloudData.gold;
-                            log(`🚨 VAROVANIE: Niekto ťa napadol a ukradol ti ${loss} goldov!`);
+                        // Detekcia krádeže: ak v databáze klesli goldy a nebola to naša akcia
+                        if (!isLocalUpdate && incomingData.gold < hero.gold) {
+                            const lootAmount = hero.gold - incomingData.gold;
+                            writeToLog(`🚨 VAROVANIE: Bol si okradnutý o ${lootAmount} goldov!`);
                         }
                         
-                        hero = cloudData;
-                        updateUI();
+                        // Aktualizácia lokálnych dát
+                        hero = incomingData;
+                        updateInterface();
                     } else {
-                        // Prvé vytvorenie hráča v databáze
-                        initCloudAccount(user);
+                        // Ak hráč v cloude ešte nie je (prvé prihlásenie)
+                        createNewCloudAccount(userIn);
                     }
                 });
 
+                // Prepneme obrazovky
+                document.getElementById('hero-name-label').innerText = "Hrdina: " + userIn;
                 document.getElementById('login-screen').style.display = 'none';
                 document.getElementById('game-screen').style.display = 'flex';
-                log(`Systém: Prihlásený ako ${user}. Cloud synchronizácia aktívna.`);
+                
+                writeToLog(`Úspešné prihlásenie. Hrdina ${userIn} vstúpil do Springfieldu.`);
             } else {
+                // Zobrazenie chyby
                 document.getElementById('error-msg').style.display = 'block';
             }
         };
 
-        async function initCloudAccount(userName) {
-            hero = { name: userName, hp: 150, str: 15, gold: 100 };
-            await setDoc(doc(db, "players", userName), hero);
+        // Vytvorenie nového hráča v databáze
+        async function createNewCloudAccount(name) {
+            const initialData = { 
+                name: name, 
+                hp: 150, 
+                str: 15, 
+                gold: 100 
+            };
+            await setDoc(doc(db, "players", name), initialData);
+            writeToLog("Vytvorený nový herný profil v cloude.");
         }
 
-        // 💾 FUNKCIA UKLADANIA
-        async function saveToCloud() {
+        // 💾 FUNKCIA SYNCHRONIZÁCIE S CLOUDOM
+        async function sendToCloud() {
             if (!hero.name) return;
-            isProcessingAction = true;
+            
+            isLocalUpdate = true; // Zastavíme notifikáciu o "krádeži"
             const docRef = doc(db, "players", hero.name);
-            await updateDoc(docRef, hero);
-            // Krátky timeout, aby sme stihli prijať vlastný snapshot bez notifikácie
-            setTimeout(() => { isProcessingAction = false; }, 1000);
+            
+            try {
+                await updateDoc(docRef, hero);
+            } catch (e) {
+                console.error("Chyba pri ukladaní:", e);
+            }
+            
+            // Po krátkej dobe opäť zapneme stráženie zmien z cloudu
+            setTimeout(() => { 
+                isLocalUpdate = false; 
+            }, 1000);
         }
 
-        // 🍺 QUEST (HOSPODA)
+        // 🍺 AKCIA: QUEST V HOSPODE
         window.playQuest = function() {
             hero.gold += 50;
-            log("Očko hovorí: 'Dobrá práca!' Získal si 50 goldov.");
-            updateUI();
-            saveToCloud();
+            writeToLog("🍺 Quest u Očka splnený! Zarobil si 50 goldov.");
+            updateInterface();
+            sendToCloud();
         };
 
-        // 🏗️ TRÉNING (ELEKTRÁREŇ)
+        // 🏗️ AKCIA: TRÉNING V ELEKTRÁRNI
         window.train = function() {
             if (hero.gold >= 10) {
                 hero.gold -= 10;
                 hero.str += 2;
-                log("Tréning v sektore 7-G dokončený. Sila +2.");
-                updateUI();
-                saveToCloud();
+                writeToLog("🏗️ Tréning v elektrárni dokončený. Sila +2.");
+                updateInterface();
+                sendToCloud();
             } else {
-                log("❌ Nemáš dosť peňazí na tréning!");
+                writeToLog("❌ Nemáš dosť goldov (10) na tréning!");
             }
         };
 
-        // 🛒 OBCHOD (KWIK-E-MART)
+        // 🛒 AKCIA: NÁKUP BRNENIA V KWIK-E-MART
         window.buyArmor = function() {
             if (hero.gold >= 150) {
                 hero.gold -= 150;
                 hero.hp += 50;
-                log("🛡️ Kúpil si si nové Dračie brnenie u Apuho. HP +50.");
-                updateUI();
-                saveToCloud();
+                writeToLog("🛡️ Kúpil si si brnenie u Apuho. HP vzrástlo o 50.");
+                updateInterface();
+                sendToCloud();
             } else {
-                log("Apu: 'Neskúšaj to na mňa, pane! Potrebuješ 150 goldov.'");
+                writeToLog("❌ Apu: 'Neskúšaj to na mňa! Potrebuješ 150 goldov.'");
             }
         };
 
-        // ⚔️ PVP SÚBOJ (ARÉNA)
+        // ⚔️ AKCIA: PVP SÚBOJ V ARÉNE
         window.pvpAttack = async function() {
             const targetName = document.getElementById('target-player').value;
 
             if (!targetName || targetName === hero.name) {
-                log("❌ Musíš si vybrať súpera (seba nemôžeš zmlátiť).");
+                writeToLog("❌ Vyber si platného súpera zo zoznamu!");
                 return;
             }
 
-            log(`⚔️ Vstupuješ do Arény proti hráčovi ${targetName}...`);
+            writeToLog(`⚔️ Vstupuješ do súboja proti hráčovi ${targetName}...`);
 
-            const targetRef = doc(db, "players", targetName);
-            const targetSnap = await getDoc(targetRef);
+            const targetDocRef = doc(db, "players", targetName);
+            const targetSnapshot = await getDoc(targetDocRef);
 
-            if (!targetSnap.exists()) {
-                log("❌ Súper zatiaľ v meste neexistuje.");
-                return;
-            }
-
-            let targetData = targetSnap.data();
-
-            // Bojová logika: (Sila + Náhoda 1-20)
-            let myPower = hero.str + Math.floor(Math.random() * 20);
-            let targetPower = targetData.str + Math.floor(Math.random() * 20);
-
-            if (myPower > targetPower) {
-                // Výhra a výpočet lupu (1-10%)
-                let lootFactor = (Math.floor(Math.random() * 10) + 1) / 100;
-                let stolenGold = Math.floor(targetData.gold * lootFactor);
-                if (stolenGold < 1 && targetData.gold > 0) stolenGold = 1;
-
-                // Odpočítame súperovi v cloude
-                await updateDoc(targetRef, { gold: targetData.gold - stolenGold });
+            if (targetSnapshot.exists()) {
+                let targetData = targetSnapshot.data();
                 
-                // Pripíšeme sebe
-                hero.gold += stolenGold;
-                log(`✅ VÍŤAZSTVO! Zmlátil si ${targetName} a ukradol mu ${stolenGold} goldov.`);
-                updateUI();
-                saveToCloud();
+                // Výpočet bojovej sily (Sila hrdinu + náhoda 1-20)
+                let myPower = hero.str + Math.floor(Math.random() * 20);
+                let enemyPower = targetData.str + Math.floor(Math.random() * 20);
+
+                if (myPower > enemyPower) {
+                    // VÝHRA! Náhodný loot 1% až 10%
+                    let lootPercentage = (Math.floor(Math.random() * 10) + 1) / 100;
+                    let stolenGold = Math.floor(targetData.gold * lootPercentage);
+                    
+                    if (stolenGold < 1 && targetData.gold > 0) stolenGold = 1;
+
+                    // 1. Update súpera v cloude (strata goldov)
+                    await updateDoc(targetDocRef, { 
+                        gold: targetData.gold - stolenGold 
+                    });
+                    
+                    // 2. Update seba (zisk goldov)
+                    hero.gold += stolenGold;
+                    writeToLog(`✅ VÍŤAZSTVO! Okradol si ${targetName} o ${stolenGold} goldov.`);
+                    
+                    updateInterface();
+                    sendToCloud();
+                } else {
+                    // PREHRA
+                    writeToLog(`💀 PREHRA! Hráč ${targetName} bol v súboji silnejší.`);
+                }
             } else {
-                log(`💀 PREHRA! ${targetName} bol silnejší a vyhodil ťa z Arény.`);
+                writeToLog("❌ Súper zatiaľ neexistuje v databáze (nebol prihlásený).");
             }
         };
 
-        // ⚙️ POMOCNÉ FUNKCIE
-        function updateUI() {
+        // ⚙️ POMOCNÉ FUNKCIE PRE UI
+        function updateInterface() {
             document.getElementById('hp').innerText = hero.hp;
             document.getElementById('str').innerText = hero.str;
             document.getElementById('gold').innerText = hero.gold;
         }
 
-        function log(message) {
-            const logBox = document.getElementById('log');
+        function writeToLog(msg) {
+            const logBox = document.getElementById('game-log');
             const now = new Date();
-            const time = now.getHours() + ":" + now.getMinutes().toString().padStart(2, '0');
-            logBox.innerHTML += `[${time}] > ${message}<br>`;
+            const timeStr = now.getHours() + ":" + now.getMinutes().toString().padStart(2, '0');
+            
+            // Pridanie správy do konzoly
+            logBox.innerHTML += `[${timeStr}] > ${msg}<br>`;
+            
+            // Automatický scroll na spodok konzoly
             logBox.scrollTop = logBox.scrollHeight;
         }
     </script>
