@@ -6,11 +6,11 @@
         name="viewport" 
         content="width=device-width, initial-scale=1.0"
     >
-    <title>Springfield Heroes RPG - The Orc & Elf MMO</title>
+    <title>Springfield Heroes MMO - The Orc Legacy</title>
     
     <style>
         /* ============================================================
-           🎨 1. GLOBÁLNY DIZAJN (CSS ARCHITEKTÚRA)
+           🎨 1. GLOBÁLNE FORMÁTOVANIE (CSS)
            ============================================================ */
         * {
             box-sizing: border-box;
@@ -31,12 +31,12 @@
         }
 
         /* ============================================================
-           🔒 2. LOGIN MODUL (AUTENTIFIKÁCIA)
+           🔒 2. PRIHLASOVACÍ MODUL (LOGIN SCREEN)
            ============================================================ */
         #login-screen { 
             position: fixed; 
-            top: 0px; 
-            left: 0px; 
+            top: 0; 
+            left: 0; 
             width: 100%; 
             height: 100%; 
             background: linear-gradient(135deg, #ffd900 0%, #ffcc00 100%);
@@ -48,10 +48,10 @@
 
         .login-card { 
             background-color: #ffffff; 
-            padding-top: 70px;
-            padding-bottom: 70px;
-            padding-left: 60px;
-            padding-right: 60px;
+            padding-top: 60px;
+            padding-bottom: 60px;
+            padding-left: 50px;
+            padding-right: 50px;
             border-radius: 50px; 
             border-width: 15px;
             border-style: solid;
@@ -64,7 +64,7 @@
 
         .login-card h1 { 
             font-size: 4em; 
-            margin-bottom: 20px; 
+            margin-bottom: 15px; 
             text-transform: uppercase; 
             letter-spacing: 6px;
             color: #000000;
@@ -83,7 +83,7 @@
             padding-bottom: 22px;
             padding-left: 25px;
             padding-right: 25px;
-            margin-top: 15px;
+            margin-top: 10px;
             margin-bottom: 25px; 
             border-width: 6px;
             border-style: solid;
@@ -96,7 +96,7 @@
             background-color: #f9f9f9;
         }
 
-        .btn-enter-world { 
+        .btn-play-game { 
             background-color: #000000; 
             color: #ffffff; 
             padding-top: 25px; 
@@ -112,14 +112,13 @@
             transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        .btn-enter-world:hover {
+        .btn-play-game:hover {
             transform: scale(1.05);
             background-color: #222222;
-            box-shadow: 0px 20px 40px rgba(0,0,0,0.3);
         }
 
         /* ============================================================
-           🗺️ 3. DYNAMICKÝ SVET - MAPA A OBJEKTY
+           🗺️ 3. DYNAMICKÝ SVET - MAPA A ARCHITEKTÚRA
            ============================================================ */
         #game-screen { 
             display: none; 
@@ -139,7 +138,6 @@
             cursor: crosshair;
         }
 
-        /* ZEM A TRÁVA */
         .landscape-grass {
             position: absolute;
             bottom: 0px;
@@ -154,7 +152,7 @@
         }
 
         /* CESTA */
-        .road-path {
+        .road-area {
             position: absolute;
             bottom: 18%;
             left: -10%;
@@ -162,7 +160,7 @@
             height: 160px;
             background-color: #333333;
             z-index: 2;
-            transform: rotate(-1.2deg);
+            transform: rotate(-1.5deg);
             border-top-width: 8px;
             border-top-style: solid;
             border-top-color: #111111;
@@ -174,156 +172,205 @@
         .road-line {
             position: absolute;
             top: 50%;
-            left: 0px;
             width: 100%;
             height: 10px;
             background-image: repeating-linear-gradient(90deg, #ffffff, #ffffff 60px, transparent 60px, transparent 120px);
             margin-top: -5px;
         }
 
-        /* ☁️ OBLAKY */
+        /* OBLAKY */
         .sky-cloud {
-            position: absolute; 
-            background-color: #ffffff;
-            border-radius: 100px; 
-            filter: blur(8px); 
-            z-index: 5;
-            animation: driftClouds linear infinite;
+            position: absolute; background: #fff; border-radius: 100px; 
+            filter: blur(8px); z-index: 5; animation: drift linear infinite;
         }
-        .sky-cloud::before {
-            content: ''; position: absolute; background-color: #fff; border-radius: 50%;
-            width: 100px; height: 100px; top: -50px; left: 20px;
-        }
-        .sky-cloud::after {
-            content: ''; position: absolute; background-color: #fff; border-radius: 50%;
-            width: 130px; height: 130px; top: -60px; left: 70px;
-        }
-
-        @keyframes driftClouds { from { left: -500px; } to { left: 110%; } }
+        .sky-cloud::before { content: ''; position: absolute; background: #fff; border-radius: 50%; width: 100px; height: 100px; top: -50px; left: 20px; }
+        .sky-cloud::after { content: ''; position: absolute; background: #fff; border-radius: 50%; width: 130px; height: 130px; top: -60px; left: 70px; }
+        @keyframes drift { from { left: -500px; } to { left: 110%; } }
 
         /* ============================================================
-           🏢 4. BUDOVY (VLASTNÁ ARCHITEKTÚRA)
+           👤 4. POSTAVY, POHYB A CHATOVACIE BUBLINY
            ============================================================ */
         
-        /* 🏭 JADROVÁ ELEKTRÁREŇ */
-        .power-plant-area {
-            position: absolute; top: 8%; right: 5%; width: 400px; height: 300px;
-            z-index: 10; cursor: pointer;
-        }
-        .pp-building {
-            position: absolute; bottom: 0; width: 100%; height: 200px;
-            background-color: #a5a5a5; border: 8px solid #000;
-        }
-        .pp-tower {
-            position: absolute; top: -150px; width: 110px; height: 170px;
-            background-color: #ccc; border: 8px solid #000;
-            clip-path: polygon(20% 0%, 80% 0%, 100% 100%, 0% 100%);
-        }
-        .t1 { left: 40px; } .t2 { right: 40px; }
-        .pp-smoke {
-            position: absolute; top: -190px; left: 20px; width: 70px; height: 70px;
-            background: rgba(220,220,220,0.8); border-radius: 50%; filter: blur(20px);
-            animation: riseSmoke 4s infinite linear;
-        }
-        @keyframes riseSmoke {
-            0% { transform: translateY(0) scale(1); opacity: 0.9; }
-            100% { transform: translateY(-300px) scale(6); opacity: 0; }
-        }
-
-        /* 🍺 HOSPODA */
-        .pub-area {
-            position: absolute; bottom: 25%; left: 4%; width: 340px; height: 260px;
-            z-index: 10; cursor: pointer;
-        }
-        .pub-structure {
-            position: absolute; bottom: 0; width: 100%; height: 210px;
-            background-color: #8b4513; border: 10px solid #000;
-        }
-        .pub-sign {
-            position: absolute; top: 30px; width: 100%; text-align: center;
-            color: #00ffdd; font-weight: 900; font-size: 1.8em;
-            text-shadow: 0 0 20px #00ffdd; animation: neonPulse 2s infinite;
-        }
-        @keyframes neonPulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
-
-        /* 🛒 KWIK-E-MART */
-        .shop-area {
-            position: absolute; top: 40%; left: 35%; width: 300px; height: 220px;
-            z-index: 10; cursor: pointer;
-        }
-        .shop-structure {
-            position: absolute; bottom: 0; width: 100%; height: 180px;
-            background-color: #ff4d4d; border: 8px solid #000;
-        }
-        .shop-banner {
-            background-color: #ffd900; color: #000; padding: 15px;
-            border-bottom: 8px solid #000; text-align: center; font-weight: 900; font-size: 1.4em;
-        }
-
-        /* ============================================================
-           👤 5. POSTAVY (ORK, ELF, BARBAR)
-           ============================================================ */
-        .character-node {
+        .player-container {
             position: absolute;
             z-index: 1000;
-            transition: all 1.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+            /* PLYNULÝ POHYB NAMIESTO TELEPORTU */
+            transition: left 1.5s cubic-bezier(0.25, 0.1, 0.25, 1.0), 
+                        top 1.5s cubic-bezier(0.25, 0.1, 0.25, 1.0);
             pointer-events: none;
             display: flex;
             flex-direction: column;
             align-items: center;
         }
 
-        /* Generický sprite pre chôdzu */
-        .sprite-walk {
-            width: 100px;
-            height: 140px;
-            background-size: cover;
-            filter: drop-shadow(0px 20px 15px rgba(0,0,0,0.5));
-            animation: move-legs 0.8s steps(4) infinite;
+        /* CHATOVACIA BUBLINA */
+        .speech-bubble {
+            position: absolute;
+            bottom: 220px; /* Nad menovkou a hlavou */
+            background-color: #ffffff;
+            border: 5px solid #000000;
+            padding-top: 12px;
+            padding-bottom: 12px;
+            padding-left: 20px;
+            padding-right: 20px;
+            border-radius: 25px;
+            font-weight: 900;
+            font-size: 16px;
+            color: #000;
+            white-space: nowrap;
+            box-shadow: 0px 10px 20px rgba(0,0,0,0.3);
+            opacity: 0;
+            transform: scale(0);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 2000;
+            max-width: 300px;
         }
 
-        @keyframes move-legs {
-            from { background-position: 0px; }
-            to { background-position: -400px; }
+        .bubble-visible {
+            opacity: 1;
+            transform: scale(1);
         }
 
-        /* 👹 ORK (Lubo) - SVG IN KÓD */
-        .orc-visual {
-            background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0MDAgMTQwIj4KICA8IS0tIEZyYW1lIDEgLSBTdGFuZGluZyAtLT4KICA8ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSgwLDApIj4KICAgIDxyZWN0IHg9IjI1IiB5PSI0MCIgd2lkdGg9IjUwIiBoZWlnaHQ9IjcwIiBmaWxsPSIjNzNBNUIxIi8+CiAgICA8cmVjdCB4PSIzMCIgeT0iMjAiIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgZmlsbD0iIzc0QjAzQyIvPgogICAgPHJlY3QgeD0iMzkiIHk9IjMwIiB3aWR0aD0iNiIgaGVpZ2h0PSI2IiBmaWxsPSIjRkZGRkZGIi8+CiAgICA8cmVjdCB4PSI1NSIgeT0iMzAiIHdpZHRoPSI2IiBoZWlnaHQ9IjYiIGZpbGw9IiNGRkZGRkYiLz4KICAgIDxyZWN0IHg9IjM1IiB5PSIxMTAiIHdpZHRoPSIxNSIgaGVpZ2h0PSIyMCIgZmlsbD0iIzVBMzAyMSIvPgogICAgPHJlY3QgeD0iNTUiIHk9IjExMCIgd2lkdGg9IjE1IiBoZWlnaHQ9IjIwIiBmaWxsPSIjNUEzMDIxIi8+CiAgPC9nPgogIDwhLS0gRnJhbWUgMiAtIFdhbGsgLS0+CiAgPGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMTAwLDApIj4KICAgIDxyZWN0IHg9IjI1IiB5PSI0MCIgd2lkdGg9IjUwIiBoZWlnaHQ9IjcwIiBmaWxsPSIjNzNBNUIxIi8+CiAgICA8cmVjdCB4PSIzMCIgeT0iMjAiIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgZmlsbD0iIzc0QjAzQyIvPgogICAgPHJlY3QgeD0iMzAiIHk9IjExMCIgd2lkdGg9IjE1IiBoZWlnaHQ9IjE1IiBmaWxsPSIjNUEzMDIxIi8+CiAgICA8cmVjdCB4PSI2MCIgeT0iMTEwIiB3aWR0aD0iMTUiIGhlaWdodD0iMjUiIGZpbGw9IiM1QTMwMjEiLz4KICA8L2c+CiAgPCEtLSBGcmFtZSAzIC0tPgogIDxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDIwMCwwKSI+CiAgICA8cmVjdCB4PSIyNSIgeT0iNDAiIHdpZHRoPSI1MCIgaGVpZ2h0PSI3MCIgZmlsbD0iIzczQTVCMSIvPgogICAgPHJlY3QgeD0iMzAiIHk9IjIwIiB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIGZpbGw9IiM3NEIwM0MiLz4KICAgIDxyZWN0IHg9IjM1IiB5PSIxMTAiIHdpZHRoPSIxNSIgaGVpZ2h0PSIyMCIgZmlsbD0iIzVBMzAyMSIvPgogICAgPHJlY3QgeD0iNTUiIHk9IjExMCIgd2lkdGg9IjE1IiBoZWlnaHQ9IjIwIiBmaWxsPSIjNUEzMDIxIi8+CiAgPC9nPgogIDwhLS0gRnJhbWUgNCAtLT4KICA8ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSgzMDAsMCkiPgogICAgPHJlY3QgeD0iMjUiIHk9IjQwIiB3aWR0aD0iWSM1MCIgaGVpZ2h0PSI3MCIgZmlsbD0iIzczQTVCMSIvPgogICAgPHJlY3QgeD0iMzAiIHk9IjIwIiB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIGZpbGw9IiM3NEIwM0MiLz4KICAgIDxyZWN0IHg9IjQwIiB5PSIxMTAiIHdpZHRoPSIxNSIgaGVpZ2h0PSIyNSIgZmlsbD0iIzVBMzAyMSIvPgogICAgPHJlY3QgeD0iNTAiIHk9IjExMCIgd2lkdGg9IjE1IiBoZWlnaHQ9IjE1IiBmaWxsPSIjNUEzMDIxIi8+CiAgPC9nPgo8L3N2Zz4=');
+        .speech-bubble::after {
+            content: '';
+            position: absolute;
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 10px;
+            border-style: solid;
+            border-color: #000 transparent transparent transparent;
         }
 
-        /* 🧝 ELF (Karol) - SVG IN KÓD */
-        .elf-visual {
-            background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0MDAgMTQwIj4KICA8IS0tIEZyYW1lIDEgLSBTdGFuZGluZyAtLT4KICA8ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSgwLDApIj4KICAgIDxyZWN0IHg9IjMwIiB5PSI0MCIgd2lkdGg9IjQwIiBoZWlnaHQ9IjcwIiBmaWxsPSIjMjc5OTQxIi8+CiAgICA8cmVjdCB4PSIzNSIgeT0iMjAiIHdpZHRoPSIzMCIgaGVpZ2h0PSIzMCIgZmlsbD0iI0ZGRUNCMSIvPgogICAgPHJlY3QgeD0iMjUiIHk9IjI1IiB3aWR0aD0iMTAiIGhlaWdodD0iMTUiIGZpbGw9IiNGRkVDRjEiLz4KICAgIDxyZWN0IHg9IjY1IiB5PSIyNSIgd2lkdGg9IjEwIiBoZWlnaHQ9IjE1IiBmaWxsPSIjRkZFQ0YxIi8+CiAgICA8cmVjdCB4PSIzNSIgeT0iMTEwIiB3aWR0aD0iMTAiIGhlaWdodD0iMjAiIGZpbGw9IiM2NTRDMzUiLz4KICAgIDxyZWN0IHg9IjU1IiB5PSIxMTAiIHdpZHRoPSIxMCIgaGVpZ2h0PSIyMCIgZmlsbD0iIzY1NEMzNSIvPgogIDwvZz4KICA8IS0tIEZyYW1lIDIgLSBXYWxrIC0tPgogIDxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDEwMCwwKSI+CiAgICA8cmVjdCB4PSIzMCIgeT0iNDAiIHdpZHRoPSI0MCIgaGVpZ2h0PSI3MCIgZmlsbD0iIzI3OTk0MSIvPgogICAgPHJlY3QgeD0iMzUiIHk9IjIwIiB3aWR0aD0iMzAiIGhlaWdodD0iMzAiIGZpbGw9IiNGRkVCQzEiLz4KICAgIDxyZWN0IHg9IjMwIiB5PSIxMTAiIHdpZHRoPSIxMCIgaGVpZ2h0PSIxNSIgZmlsbD0iIzY1NEMzNSIvPgogICAgPHJlY3QgeD0iNjAiIHk9IjExMCIgd2lkdGg9IjEwIiBoZWlnaHQ9IjI1IiBmaWxsPSIjNjU0QzM1Ii8+CiAgPC9nPgogIDwhLS0gRnJhbWUgMyAtLT4KICA8ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSgyMDAsMCkiPgogICAgPHJlY3QgeD0iMzAiIHk9IjQwIiB3aWR0aD0iNDAiIGhlaWdodD0iNzAiIGZpbGw9IiMyNzk5NDEiLz4KICAgIDxyZWN0IHg9IjM1IiB5PSIyMCIgd2lkdGg9IjMwIiBoZWlnaHQ9IjMwIiBmaWxsPSIjRkZFQkMxIi8+CiAgICA8cmVjdCB4PSIzNSIgeT0iMTEwIiB3aWR0aD0iMTAiIGhlaWdodD0iMjAiIGZpbGw9IiM2NTRDMzUiLz4KICAgIDxyZWN0IHg9IjU1IiB5PSIxMTAiIHdpZHRoPSIxMCIgaGVpZ2h0PSIyMCIgZmlsbD0iIzY1NEMzNSIvPgogIDwvZz4KICA8IS0tIEZyYW1lIDQgLS0+CiAgPGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMzAwLDApIj4KICAgIDxyZWN0IHg9IjMwIiB5PSI0MCIgd2lkdGg9IjQwIiBoZWlnaHQ9IjcwIiBmaWxsPSIjMjc5OTQxIi8+CiAgICA8cmVjdCB4PSIzNSIgeT0iMjAiIHdpZHRoPSIzMCIgaGVpZ2h0PSIzMCIgZmlsbD0iI0ZGRUNCMSIvPgogICAgPHJlY3QgeD0iNDAiIHk9IjExMCIgd2lkdGg9IjEwIiBoZWlnaHQ9IjI1IiBmaWxsPSIjNjU0QzM1Ii8+CiAgICA8cmVjdCB4PSI1MCIgeT0iMTEwIiB3aWR0aD0iMTAiIGhlaWdodD0iMTUiIGZpbGw9IiM2NTRDMzUiLz4KICA8L2c+Cjwvc3ZnPg==');
-        }
-
-        /* ⚔️ BARBAR (Peter) */
-        .human-visual {
-            background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0MDAgMTQwIj4KICA8ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSgwLDApIj4KICAgIDxyZWN0IHg9IjMwIiB5PSI0MCIgd2lkdGg9IjQwIiBoZWlnaHQ9IjcwIiBmaWxsPSIjNTU1Ii8+CiAgICA8cmVjdCB4PSIzNSIgeT0iMjAiIHdpZHRoPSIzMCIgaGVpZ2h0PSIzMCIgZmlsbD0iI0ZEQyIvPgogICAgPHJlY3QgeD0iMzUiIHk9IjExMCIgd2lkdGg9IjEwIiBoZWlnaHQ9IjIwIiBmaWxsPSIjMjIyIi8+CiAgICA8cmVjdCB4PSI1NSIgeT0iMTEwIiB3aWR0aD0iMTAiIGhlaWdodD0iMjAiIGZpbGw9IiMyMjIiLz4KICA8L2c+Cjwvc3ZnPg==');
-        }
-
-        .hero-tag {
-            background-color: rgba(0,0,0,0.85);
+        .name-tag {
+            background-color: rgba(0,0,0,0.9);
             color: #ffffff;
-            padding: 8px 18px;
+            padding-top: 6px;
+            padding-bottom: 6px;
+            padding-left: 15px;
+            padding-right: 15px;
             border-radius: 12px;
             font-weight: 900;
-            font-size: 15px;
+            font-size: 14px;
+            border: 3px solid #ffd900;
+            margin-bottom: 10px;
             white-space: nowrap;
-            border-width: 3px;
-            border-style: solid;
-            margin-bottom: 5px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.4);
         }
 
-        /* Farby podľa hrdinov */
-        .hero-orc .hero-tag { border-color: #ff3333; color: #ff9999; }
-        .hero-elf .hero-tag { border-color: #33ff33; color: #99ff99; }
-        .hero-human .hero-tag { border-color: #33aaff; color: #99ccff; }
+        /* 👹 LUBO - VIZUÁL ORKA (PODĽA OBRÁZKA) */
+        .visual-orc-master {
+            width: 120px;
+            height: 160px;
+            position: relative;
+            animation: breathe 2s infinite ease-in-out;
+            filter: drop-shadow(0 15px 10px rgba(0,0,0,0.4));
+        }
+
+        /* Hlava orka */
+        .orc-head {
+            position: absolute;
+            top: 0px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 70px;
+            background-color: #6B8E23; /* Orkská zelená z obrázka */
+            border: 5px solid #000;
+            border-radius: 20px;
+            z-index: 5;
+        }
+
+        /* Účes - Ponytail */
+        .orc-hair {
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            width: 15px;
+            height: 40px;
+            background-color: #4B3621;
+            border: 3px solid #000;
+            border-radius: 10px;
+            z-index: 4;
+        }
+
+        /* Kly */
+        .orc-tusks {
+            position: absolute;
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 10px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .tusk {
+            width: 8px;
+            height: 12px;
+            background-color: #fff;
+            border: 2px solid #000;
+            border-radius: 0 0 5px 5px;
+        }
+
+        /* Trup a Brnenie */
+        .orc-body {
+            position: absolute;
+            top: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 80px;
+            background-color: #8B4513; /* Hnedá koža z obrázka */
+            border: 6px solid #000;
+            border-radius: 15px;
+            z-index: 3;
+        }
+
+        /* Ramená (Pauldrons) */
+        .orc-shoulder {
+            position: absolute;
+            top: 55px;
+            width: 45px;
+            height: 40px;
+            background-color: #5D4037;
+            border: 5px solid #000;
+            border-radius: 10px;
+            z-index: 4;
+        }
+        .s-left { left: -10px; }
+        .s-right { right: -10px; }
+
+        @keyframes breathe {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+        }
+
+        /* 🧝 KAROL - VIZUÁL ELFA */
+        .visual-elf-master {
+            width: 100px;
+            height: 160px;
+            position: relative;
+            filter: drop-shadow(0 15px 10px rgba(0,0,0,0.3));
+        }
+
+        .elf-head {
+            position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+            width: 50px; height: 60px; background-color: #FFE4C4; border: 4px solid #000; border-radius: 50%; z-index: 5;
+        }
+        .elf-ears {
+            position: absolute; top: 15px; left: -10px; width: 70px; height: 15px;
+            background-color: #FFE4C4; border: 4px solid #000; z-index: 4; clip-path: polygon(0 0, 100% 0, 80% 100%, 20% 100%);
+        }
+        .elf-body {
+            position: absolute; top: 55px; left: 50%; transform: translateX(-50%);
+            width: 70px; height: 80px; background-color: #2E7D32; border: 5px solid #000; border-radius: 10px; z-index: 3;
+        }
 
         /* ============================================================
-           🖥️ 6. SIDEBAR - PANEL OVLÁDANIA
+           🖥️ 5. SIDEBAR - PANEL OVLÁDANIA A LOG
            ============================================================ */
-        .sidebar { 
+        .sidebar-right { 
             width: 480px; 
             background-color: #ffffff; 
             padding-left: 35px; 
@@ -332,111 +379,173 @@
             padding-bottom: 25px;
             display: flex; 
             flex-direction: column; 
-            box-shadow: -25px 0 60px rgba(0,0,0,0.4); 
+            box-shadow: -25px 0 60px rgba(0,0,0,0.5); 
             overflow-y: auto;
-            z-index: 1000;
+            z-index: 10000;
         }
 
-        .sidebar h2 { font-size: 2.8em; text-align: center; border-bottom: 8px solid #ffd900; padding-bottom: 12px; margin-bottom: 25px; text-transform: uppercase; }
-
-        .stats-box { 
-            background-color: #f2f2f2; padding: 25px; border-radius: 30px; 
-            border: 6px solid #222; margin-bottom: 25px; 
+        .sidebar-right h2 { 
+            font-size: 2.8em; 
+            text-align: center; 
+            border-bottom-width: 8px;
+            border-bottom-style: solid;
+            border-bottom-color: #ffd900; 
+            padding-bottom: 12px; 
+            margin-bottom: 25px; 
+            text-transform: uppercase; 
         }
-        .stat-line { display: flex; justify-content: space-between; font-size: 1.8em; font-weight: 900; margin: 10px 0; }
+
+        .stats-display { 
+            background-color: #f2f2f2; 
+            padding: 25px; 
+            border-radius: 30px; 
+            border-width: 6px;
+            border-style: solid;
+            border-color: #222222; 
+            margin-bottom: 30px; 
+        }
+
+        .stat-item { 
+            display: flex; 
+            justify-content: space-between; 
+            font-size: 1.8em; 
+            font-weight: 900; 
+            margin-top: 12px; 
+            margin-bottom: 12px; 
+        }
+
         .stat-val { color: #008cff; }
 
+        /* LOGOVACIA KONZOLA */
         #game-log { 
-            background-color: #111; color: #00ff00; padding: 20px; 
-            height: 320px; overflow-y: auto; font-family: 'Courier New', monospace; 
-            font-size: 16px; border: 6px solid #000; border-radius: 20px;
-            line-height: 1.7; box-shadow: inset 0 0 20px #000; margin-bottom: 15px;
+            background-color: #111111; 
+            color: #00ff00; 
+            padding: 20px; 
+            height: 350px; 
+            overflow-y: auto; 
+            font-family: 'Courier New', monospace; 
+            font-size: 16px; 
+            border-width: 6px;
+            border-style: solid;
+            border-color: #000000; 
+            border-radius: 25px;
+            line-height: 1.8; 
+            box-shadow: inset 0 0 25px #000;
+            margin-bottom: 20px;
         }
 
-        .chat-row { display: flex; gap: 12px; }
-        .chat-row input { flex: 1; padding: 18px; border: 5px solid #000; border-radius: 15px; font-size: 1.2em; outline: none; }
-        .btn-send { background: #000; color: #fff; border: none; padding: 0 25px; border-radius: 15px; font-weight: bold; cursor: pointer; }
-
-        /* PvP MODUL */
-        .arena-box { 
-            background: #ffeaea; padding: 25px; border-radius: 30px; 
-            border: 6px solid #c0392b; margin-top: 15px; 
+        .chat-input-row { 
+            display: flex; 
+            gap: 15px; 
         }
-        .arena-box h3 { color: #c0392b; text-align: center; margin-bottom: 15px; text-transform: uppercase; font-weight: 900; }
-        select.target-list { width: 100%; padding: 15px; border: 5px solid #000; border-radius: 15px; font-size: 1.2em; font-weight: bold; margin-bottom: 15px; }
-        .btn-duel { width: 100%; padding: 18px; background: #c0392b; color: #fff; border: 5px solid #000; border-radius: 18px; font-weight: 900; font-size: 1.4em; cursor: pointer; }
+
+        .chat-input-row input { 
+            flex: 1; 
+            padding: 18px; 
+            border-width: 5px;
+            border-style: solid;
+            border-color: #000000; 
+            border-radius: 18px; 
+            font-size: 1.2em; 
+            outline: none; 
+        }
+
+        .btn-send-chat { 
+            background-color: #000000; 
+            color: #ffffff; 
+            padding-left: 25px;
+            padding-right: 25px;
+            border-radius: 18px; 
+            font-weight: 900; 
+            cursor: pointer; 
+            border: none;
+        }
+
+        /* ARENA */
+        .pvp-module { 
+            background-color: #ffeaea; 
+            padding: 25px; 
+            border-radius: 35px; 
+            border-width: 6px;
+            border-style: solid;
+            border-color: #c0392b; 
+            margin-top: 20px; 
+        }
+
+        .btn-attack-now { 
+            width: 100%; 
+            padding: 20px; 
+            background-color: #c0392b; 
+            color: #ffffff; 
+            border-width: 5px;
+            border-style: solid;
+            border-color: #000; 
+            border-radius: 20px; 
+            font-weight: 900; 
+            font-size: 1.4em; 
+            cursor: pointer; 
+            text-transform: uppercase;
+        }
 
     </style>
 </head>
-<body onclick="processMapMovement(event)">
+<body onclick="handleMapMovement(event)">
 
     <div id="login-screen">
         <div class="login-card">
-            <h1>Springfield Live</h1>
-            <p>Prihlás sa, vyber postavu a ovládni mesto!</p>
+            <h1>Springfield RPG</h1>
+            <p>Prihlás sa a tvoja postava ožije v reálnom čase!</p>
             
-            <input type="text" id="auth-user" placeholder="Meno (Lubo, Karol, Peter)">
-            <input type="password" id="auth-pass" placeholder="Tvoje heslo">
+            <input type="text" id="user-field" placeholder="Meno hrdinu (Lubo, Karol, Peter)">
+            <input type="password" id="pass-field" placeholder="Tvoje tajné heslo">
             
-            <button class="btn-enter-world" onclick="startMMO()">VSTÚPIŤ DO HRY</button>
+            <button class="btn-play-game" onclick="startMMOEngine()">VSTÚPIŤ DO HRY</button>
             
-            <p id="auth-error" style="color:red; display:none; margin-top:25px; font-weight:900;">❌ Neplatné prihlasovacie údaje!</p>
+            <p id="error-auth" style="color:red; display:none; margin-top:25px; font-weight:900;">❌ Chybné údaje!</p>
         </div>
     </div>
 
     <div id="game-screen">
         
-        <div class="map-viewport" id="viewport">
+        <div class="map-viewport" id="game-viewport">
             <div class="landscape-grass"></div>
-            <div class="road-path"><div class="road-line"></div></div>
+            <div class="road-area"><div class="road-line"></div></div>
 
-            <div class="sky-cloud" style="width:200px; height:65px; top:5%; animation-duration:45s;"></div>
-            <div class="sky-cloud" style="width:300px; height:90px; top:20%; animation-duration:75s; animation-delay:-10s;"></div>
+            <div class="sky-cloud" style="width:200px; height:60px; top:5%; animation-duration:45s;"></div>
+            <div class="sky-cloud" style="width:280px; height:90px; top:25%; animation-duration:70s; animation-delay:-15s;"></div>
 
-            <div class="pub-area" onclick="triggerBuilding('quest')">
-                <div class="pub-structure"><div class="neon-sign">U SMÄDNÉHO MEDVEĎA</div></div>
+            <div style="position:absolute; bottom:20%; left:5%; width:300px; height:200px; background:#8b4513; border:8px solid #000; cursor:pointer; z-index:10;" onclick="triggerAction('quest')">
+                <div style="color:#00ffcc; text-align:center; padding:15px; font-weight:900; font-size:1.4em; text-shadow:0 0 10px #00ffcc;">U OČKA</div>
             </div>
 
-            <div class="power-plant-area" onclick="triggerBuilding('train')">
-                <div class="pp-tower t1"><div class="pp-smoke"></div><div class="pp-smoke" style="animation-delay:2s;"></div></div>
-                <div class="pp-tower t2"><div class="pp-smoke" style="animation-delay:1s;"></div></div>
-                <div class="pp-building"><div style="color:white; text-align:center; padding:20px; font-weight:900; font-size:1.6em;">SEKTOR 7-G</div></div>
-            </div>
-
-            <div class="shop-area" onclick="triggerBuilding('shop')">
-                <div class="shop-structure"><div class="shop-banner">KWIK-E-MART</div></div>
-            </div>
-
-            <div class="bus-dynamic"></div>
-
-            <div id="mmo-characters-layer"></div>
+            <div id="mmo-world-layer"></div>
         </div>
         
-        <div class="sidebar">
+        <div class="sidebar-right">
             <h2 id="hero-display-name">Hrdina: ---</h2>
             
-            <div class="stats-box">
-                <div class="stat-line"><span>❤️ HP (Zdravie):</span> <span id="val-hp" class="stat-val">---</span></div>
-                <div class="stat-line"><span>💪 SILA (Bojová):</span> <span id="val-str" class="stat-val">---</span></div>
-                <div class="stat-line"><span>💰 GOLDY (Zlato):</span> <span id="val-gold" class="stat-val">---</span></div>
+            <div class="stats-display">
+                <div class="stat-item"><span>❤️ HP:</span> <span id="val-hp" class="stat-val">---</span></div>
+                <div class="stat-item"><span>💪 SILA:</span> <span id="val-str" class="stat-val">---</span></div>
+                <div class="stat-item"><span>💰 GOLDY:</span> <span id="val-gold" class="stat-val">---</span></div>
             </div>
 
-            <div id="game-log">Pripájanie k herným serverom...</div>
+            <div id="game-log">Systém: Pripájanie k Firebase MMO serveru...</div>
 
-            <div class="chat-row">
-                <input type="text" id="chat-input-field" placeholder="Napíš správu..." onkeydown="if(event.key==='Enter') dispatchChat()">
-                <button class="btn-send" onclick="dispatchChat()">POSLAŤ</button>
+            <div class="chat-input-row">
+                <input type="text" id="chat-msg-field" placeholder="Napíš správu všetkým..." onkeydown="if(event.key==='Enter') sendRealtimeChat()">
+                <button class="btn-send-chat" onclick="sendRealtimeChat()">POSLAŤ</button>
             </div>
             
-            <div class="arena-box">
-                <h3>⚔️ Springfield Aréna (Loot 10%)</h3>
-                <select id="victim-select" class="target-list">
-                    <option value="">-- Vyber obeť --</option>
+            <div class="pvp-module">
+                <h3 style="color:#c0392b; text-align:center; margin-bottom:15px; font-weight:900; text-transform:uppercase;">⚔️ ARENA PvP</h3>
+                <select id="victim-select" style="width:100%; padding:15px; border:5px solid #000; border-radius:18px; font-weight:bold; margin-bottom:15px; font-size:1.1em;">
+                    <option value="">-- Vyber si obeť --</option>
                     <option value="Lubo">Lubo</option>
                     <option value="Karol">Karol</option>
                     <option value="Peter">Peter</option>
                 </select>
-                <button class="btn-duel" onclick="executePvP()">ZAÚTOČIŤ NA HRÁČA!</button>
+                <button class="btn-attack-now" onclick="executeLootAttack()">ZAÚTOČIŤ NA HRÁČA!</button>
             </div>
         </div>
     </div>
@@ -445,7 +554,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getFirestore, doc, getDoc, setDoc, updateDoc, onSnapshot, collection, addDoc, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        // Tvoja Firebase Config
+        // Tvoja unikátna Firebase konfigurácia
         const firebaseConfig = {
             apiKey: "AIzaSyBco-l3gRLUA9y4aPmYuYnRT_gkZJGo4E",
             authDomain: "springfield-heroes.firebaseapp.com",
@@ -458,157 +567,183 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        let hero = { name: "", hp: 150, str: 15, gold: 100, x: 50, y: 50 };
-        let localLock = false;
+        let localHero = { name: "", hp: 150, str: 15, gold: 100, x: 50, y: 50 };
+        let movementLock = false;
 
-        // --- 🔑 LOGIN ---
-        window.startMMO = async function() {
-            const u = document.getElementById('auth-user').value;
-            const p = document.getElementById('auth-pass').value;
-            const valid = { "Lubo":"123Lubo", "Karol":"123Karol", "Peter":"123Peter" };
+        // --- 🔑 START MMO ---
+        window.startMMOEngine = async function() {
+            const userIn = document.getElementById('user-field').value;
+            const passIn = document.getElementById('pass-field').value;
+            const database = { "Lubo":"123Lubo", "Karol":"123Karol", "Peter":"123Peter" };
 
-            if (valid[u] && valid[u] === p) {
-                hero.name = u;
+            if (database[userIn] && database[userIn] === passIn) {
+                localHero.name = userIn;
                 
-                // Real-time MMO Listener
+                // 1. MMO REAL-TIME LISTENER (Sledovanie pohybu všetkých)
                 onSnapshot(collection(db, "players"), (snap) => {
-                    const l = document.getElementById('mmo-characters-layer');
-                    l.innerHTML = '';
-                    snap.forEach(d => {
-                        const data = d.data();
-                        renderSprite(data);
-                        if (data.name === hero.name) {
-                            if (!localLock && data.gold < hero.gold) writeLog(`🚨 ALERT: Niekto ťa napadol! Stratil si ${hero.gold - data.gold} goldov.`);
-                            hero = data;
-                            refreshUI();
+                    const world = document.getElementById('mmo-world-layer');
+                    world.innerHTML = ''; // Reset pre prekreslenie
+
+                    snap.forEach((pDoc) => {
+                        const data = pDoc.data();
+                        renderDynamicCharacter(data);
+                        
+                        if (data.name === localHero.name) {
+                            if (!movementLock && data.gold < localHero.gold) pushToConsole(`🚨 ALERT: Bol si okradnutý o ${localHero.gold - data.gold} goldov!`);
+                            localHero = data;
+                            refreshInterface();
                         }
                     });
                 });
 
-                // Chat Listener
-                const qMsg = query(collection(db, "chat"), orderBy("time", "desc"), limit(25));
-                onSnapshot(qMsg, s => {
-                    s.docChanges().reverse().forEach(c => {
-                        if (c.type === "added") writeLog(`[CHAT] ${c.doc.data().user}: ${c.doc.data().msg}`);
+                // 2. CHAT REAL-TIME LISTENER (Pre bublinky)
+                const chatQuery = query(collection(db, "chat"), orderBy("time", "desc"), limit(25));
+                onSnapshot(chatQuery, (chatSnap) => {
+                    chatSnap.docChanges().reverse().forEach(change => {
+                        if (change.type === "added") {
+                            const msgData = change.doc.data();
+                            pushToConsole(`[CHAT] ${msgData.user}: ${msgData.msg}`);
+                            triggerSpeechBubble(msgData.user, msgData.msg);
+                        }
                     });
                 });
 
                 document.getElementById('login-screen').style.display = 'none';
                 document.getElementById('game-screen').style.display = 'flex';
-                document.getElementById('hero-display-name').innerText = "Hrdina: " + u;
-                writeLog(`Vitaj, ${u}! Svet je tvoj.`);
+                document.getElementById('hero-display-name').innerText = "Hrdina: " + userIn;
             } else {
-                document.getElementById('auth-error').style.display = 'block';
+                document.getElementById('error-auth').style.display = 'block';
             }
         };
 
-        // --- 🚶 POHYB ---
-        window.processMapMovement = async function(e) {
-            if (e.target.closest('.sidebar')) return;
-            const view = document.getElementById('viewport');
-            const r = view.getBoundingClientRect();
+        // --- 🚶 MODUL: PLYNULÝ POHYB ---
+        window.handleMapMovement = async function(e) {
+            if (e.target.closest('.sidebar-right')) return;
+            const viewport = document.getElementById('game-viewport');
+            const rect = viewport.getBoundingClientRect();
             
-            hero.x = ((e.clientX - r.left) / r.width) * 100;
-            hero.y = ((e.clientY - r.top) / r.height) * 100;
+            localHero.x = ((e.clientX - rect.left) / rect.width) * 100;
+            localHero.y = ((e.clientY - rect.top) / rect.height) * 100;
             
-            localLock = true;
-            await updateDoc(doc(db, "players", hero.name), { x: hero.x, y: hero.y });
-            setTimeout(() => { localLock = false; }, 800);
+            movementLock = true;
+            await updateDoc(doc(db, "players", localHero.name), { x: localHero.x, y: localHero.y });
+            setTimeout(() => movementLock = false, 1500);
         };
 
-        function renderSprite(p) {
-            const layer = document.getElementById('mmo-characters-layer');
-            const div = document.createElement('div');
+        function renderDynamicCharacter(p) {
+            const world = document.getElementById('mmo-world-layer');
+            const container = document.createElement('div');
             
-            div.className = 'character-node';
-            // Nastavenie polohy (X, Y)
-            div.style.left = `calc(${p.x}% - 50px)`;
-            div.style.top = `calc(${p.y}% - 120px)`; 
+            container.className = 'player-container';
+            container.style.left = `calc(${p.x}% - 60px)`;
+            container.style.top = `calc(${p.y}% - 140px)`;
             
-            // Logika postáv
-            let raceClass = 'hero-human'; 
-            let visualClass = 'human-visual';
-            
-            if (p.name === 'Lubo') { 
-                raceClass = 'hero-orc'; 
-                visualClass = 'orc-visual'; 
-            } else if (p.name === 'Karol') { 
-                raceClass = 'hero-elf'; 
-                visualClass = 'elf-visual'; 
+            // Logika Vizuálu (Lubo = Ork, Karol = Elf)
+            let characterHTML = '';
+            if (p.name === 'Lubo') {
+                characterHTML = `
+                    <div class="speech-bubble" id="bubble-${p.name}"></div>
+                    <div class="name-tag" style="border-color:#ff0000">${p.name}</div>
+                    <div class="visual-orc-master">
+                        <div class="orc-hair"></div>
+                        <div class="orc-head">
+                            <div class="orc-tusks"><div class="tusk"></div><div class="tusk"></div></div>
+                        </div>
+                        <div class="orc-shoulder s-left"></div>
+                        <div class="orc-shoulder s-right"></div>
+                        <div class="orc-body"></div>
+                    </div>
+                `;
+            } else {
+                characterHTML = `
+                    <div class="speech-bubble" id="bubble-${p.name}"></div>
+                    <div class="name-tag" style="border-color:#00ff00">${p.name}</div>
+                    <div class="visual-elf-master">
+                        <div class="elf-head"><div class="elf-ears"></div></div>
+                        <div class="elf-body"></div>
+                    </div>
+                `;
             }
             
-            div.classList.add(raceClass);
-            
-            div.innerHTML = `
-                <div class="hero-tag">${p.name}</div>
-                <div class="sprite-walk ${visualClass}"></div>
-            `;
-            layer.appendChild(div);
+            container.innerHTML = characterHTML;
+            world.appendChild(container);
         }
 
-        // --- 🏠 AKCIE ---
-        window.triggerBuilding = async function(type) {
-            if (type === 'quest') { hero.gold += 50; writeLog("Zarobil si 50 goldov u Očka."); }
-            if (type === 'train') { 
-                if(hero.gold >= 10) { hero.gold -= 10; hero.str += 2; writeLog("Sila vzrástla o 2!"); }
-                else writeLog("❌ Nemáš dosť peňazí na tréning.");
-            }
-            if (type === 'shop') {
-                if(hero.gold >= 150) { hero.gold -= 150; hero.hp += 50; writeLog("Kúpené brnenie. HP +50."); }
-                else writeLog("❌ Apu: 'Potrebuješ 150 goldov, pane!'");
-            }
-            localLock = true;
-            await updateDoc(doc(db, "players", hero.name), hero);
-            setTimeout(() => { localLock = false; }, 1000);
+        // --- 💬 MODUL: BUBLINKOVÝ CHAT ---
+        function triggerSpeechBubble(userName, message) {
+            setTimeout(() => {
+                const bubble = document.getElementById(`bubble-${userName}`);
+                if (bubble) {
+                    bubble.innerText = message;
+                    bubble.classList.add('bubble-visible');
+                    setTimeout(() => bubble.classList.remove('bubble-visible'), 5000);
+                }
+            }, 200);
+        }
+
+        window.sendRealtimeChat = async function() {
+            const field = document.getElementById('chat-msg-field');
+            if (!field.value.trim()) return;
+            
+            await addDoc(collection(db, "chat"), {
+                user: localHero.name,
+                msg: field.value,
+                time: Date.now()
+            });
+            field.value = "";
         };
 
-        // --- ⚔️ PvP ---
-        window.executePvP = async function() {
+        // --- ⚔️ MODUL: PvP LOOT 10% ---
+        window.executeLootAttack = async function() {
             const target = document.getElementById('victim-select').value;
-            if(!target || target === hero.name) return writeLog("Vyber si obeť!");
+            if (!target || target === localHero.name) return pushToConsole("❌ Vyber si obeť!");
             
-            writeLog(`⚔️ Bojuješ proti ${target}...`);
+            pushToConsole(`⚔️ Útočíš na ${target}...`);
             const tRef = doc(db, "players", target);
             const tSnap = await getDoc(tRef);
             
-            if(tSnap.exists()) {
-                let tData = tSnap.data();
-                if((hero.str + Math.random()*25) > (tData.str + Math.random()*25)) {
-                    let loot = Math.floor(tData.gold * 0.10); // 10% loot
-                    if(loot < 1 && tData.gold > 0) loot = 1;
+            if (tSnap.exists()) {
+                const tData = tSnap.data();
+                if ((localHero.str + Math.random()*30) > (tData.str + Math.random()*30)) {
+                    let loot = Math.floor(tData.gold * 0.10);
+                    if (loot < 1 && tData.gold > 0) loot = 1;
 
                     await updateDoc(tRef, { gold: tData.gold - loot });
-                    hero.gold += loot;
-                    writeLog(`✅ VÍŤAZSTVO! Ukradol si ${loot} goldov hráčovi ${target}.`);
-                    localLock = true;
-                    await updateDoc(doc(db, "players", hero.name), { gold: hero.gold });
-                    setTimeout(() => { localLock = false; }, 1000);
+                    localHero.gold += loot;
+                    pushToConsole(`✅ VÍŤAZSTVO! Ukradol si ${loot}g hráčovi ${target}!`);
+                    
+                    movementLock = true;
+                    await updateDoc(doc(db, "players", localHero.name), { gold: localHero.gold });
+                    setTimeout(() => movementLock = false, 1000);
                 } else {
-                    writeLog(`💀 PORÁŽKA! ${target} ťa zmlátil.`);
+                    pushToConsole(`💀 PREHRA! ${target} ťa zmlátil.`);
                 }
             }
         };
 
-        // --- CHAT ---
-        window.dispatchChat = async () => {
-            const field = document.getElementById('chat-input-field');
-            if (!field.value) return;
-            await addDoc(collection(db, "chat"), { user: hero.name, msg: field.value, time: Date.now() });
-            field.value = "";
+        // --- 🏠 MODUL: AKCIE ---
+        window.triggerAction = async function(type) {
+            if (type === 'quest') {
+                localHero.gold += 50;
+                pushToConsole("🍺 Očko ti dal 50 goldov.");
+            }
+            movementLock = true;
+            await updateDoc(doc(db, "players", localHero.name), localHero);
+            setTimeout(() => movementLock = false, 1000);
         };
 
-        function refreshUI() {
-            document.getElementById('val-hp').innerText = hero.hp;
-            document.getElementById('val-str').innerText = hero.str;
-            document.getElementById('val-gold').innerText = hero.gold;
+        function refreshInterface() {
+            document.getElementById('val-hp').innerText = localHero.hp;
+            document.getElementById('val-str').innerText = localHero.str;
+            document.getElementById('val-gold').innerText = localHero.gold;
         }
 
-        function writeLog(m) {
-            const b = document.getElementById('game-log');
+        function pushToConsole(txt) {
+            const box = document.getElementById('game-log');
             const d = new Date();
-            const time = d.getHours() + ":" + d.getMinutes().toString().padStart(2, '0');
-            b.innerHTML += `[${time}] > ${m}<br>`;
-            b.scrollTop = b.scrollHeight;
+            const ts = d.getHours() + ":" + d.getMinutes().toString().padStart(2, '0');
+            box.innerHTML += `[${ts}] > ${txt}<br>`;
+            box.scrollTop = box.scrollHeight;
         }
     </script>
 </body>
